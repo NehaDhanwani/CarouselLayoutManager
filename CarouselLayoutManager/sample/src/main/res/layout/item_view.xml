@@ -12,12 +12,13 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp">
+        android:elevation="5dp"
+        android:layout_height="320dp">
 
         <TextView
             android:id="@+id/c_item_1"
             android:layout_width="wrap_content"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:background="#f00" />
 
@@ -25,6 +26,7 @@
             android:id="@+id/c_item_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_alignParentBottom="true"
             android:background="#f00" />
 
@@ -32,13 +34,9 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_centerInParent="true"
+            android:visibility="gone"
             android:background="#0f0" />
 
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
 
     </RelativeLayout>
 

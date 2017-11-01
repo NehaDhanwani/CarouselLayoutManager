@@ -1,6 +1,7 @@
 package com.azoft.carousellayoutmanager;
 
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
@@ -12,6 +13,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -279,7 +281,8 @@ public class CarouselLayoutManager extends RecyclerView.LayoutManager implements
         }
         final int resultScroll;
         if (mCircleLayout) {
-            resultScroll = diff;
+
+            resultScroll =diff;
 
             mLayoutHelper.mScrollOffset += resultScroll;
 
@@ -332,7 +335,8 @@ public class CarouselLayoutManager extends RecyclerView.LayoutManager implements
     public void onLayoutChildren(@NonNull final RecyclerView.Recycler recycler, @NonNull final RecyclerView.State state) {
         if (0 == state.getItemCount()) {
             removeAndRecycleAllViews(recycler);
-            selectItemCenterPosition(INVALID_POSITION);
+            //Changed: remove this to focus center focus on first appearance
+            //  selectItemCenterPosition(INVALID_POSITION);
             return;
         }
 
@@ -416,10 +420,10 @@ public class CarouselLayoutManager extends RecyclerView.LayoutManager implements
     }
 
     private void fillDataVertical(final RecyclerView.Recycler recycler, final int width, final int height, final boolean childMeasuringNeeded) {
-        final int start = (width - mDecoratedChildWidth) / 2;
+        final int start = (width - mDecoratedChildWidth);
         final int end = start + mDecoratedChildWidth;
-
-        final int centerViewTop = (height - mDecoratedChildHeight) / 2;
+        //Changed: to start drawing from top
+        final int centerViewTop = 0;//(height - mDecoratedChildHeight) / 2;
 
         for (int i = 0, count = mLayoutHelper.mLayoutOrder.length; i < count; ++i) {
             final LayoutOrder layoutOrder = mLayoutHelper.mLayoutOrder[i];
@@ -457,10 +461,11 @@ public class CarouselLayoutManager extends RecyclerView.LayoutManager implements
         if (null == transformation) {
             view.layout(start, top, end, bottom);
         } else {
+
             view.layout(Math.round(start + transformation.mTranslationX), Math.round(top + transformation.mTranslationY),
                     Math.round(end + transformation.mTranslationX), Math.round(bottom + transformation.mTranslationY));
 
-            ViewCompat.setScaleX(view, transformation.mScaleX);
+            //ViewCompat.setScaleX(view, transformation.mScaleX);
             ViewCompat.setScaleY(view, transformation.mScaleY);
         }
     }
@@ -469,6 +474,8 @@ public class CarouselLayoutManager extends RecyclerView.LayoutManager implements
      * @return current scroll position of center item. this value can be in any range if it is cycle layout.
      * if this is not, that then it is in [0, {@link #mItemsCount - 1}]
      */
+
+
     private float getCurrentScrollPosition() {
         final int fullScrollSize = getMaxScrollOffset();
         if (0 == fullScrollSize) {
@@ -506,6 +513,12 @@ public class CarouselLayoutManager extends RecyclerView.LayoutManager implements
             mLayoutHelper.initLayoutOrder(layoutCount);
 
             final int countLayoutHalf = layoutCount / 2;
+
+            for (int i = 0; i < layoutCount; i++) {
+                int position = i;
+                mLayoutHelper.setLayoutOrder(i, position, absCurrentScrollPosition - i);
+
+            }/*
             // before center item
             for (int i = 1; i <= countLayoutHalf; ++i) {
                 final int position = Math.round(absCurrentScrollPosition - i + mItemsCount) % mItemsCount;
@@ -515,7 +528,7 @@ public class CarouselLayoutManager extends RecyclerView.LayoutManager implements
             for (int i = layoutCount - 1; i >= countLayoutHalf + 1; --i) {
                 final int position = Math.round(absCurrentScrollPosition - i + layoutCount) % mItemsCount;
                 mLayoutHelper.setLayoutOrder(i - 1, position, centerItem - absCurrentScrollPosition + layoutCount - i);
-            }
+            }*/
             mLayoutHelper.setLayoutOrder(layoutCount - 1, centerItem, centerItem - absCurrentScrollPosition);
 
         } else {
@@ -573,7 +586,8 @@ public class CarouselLayoutManager extends RecyclerView.LayoutManager implements
 
         final int dimenDiff;
         if (VERTICAL == mOrientation) {
-            dimenDiff = (getHeightNoPadding() - mDecoratedChildHeight) / 2;
+            //Changed: removed division to make overlapping items below to be more visible
+            dimenDiff = (getHeightNoPadding() - mDecoratedChildHeight);
         } else {
             dimenDiff = (getWidthNoPadding() - mDecoratedChildWidth) / 2;
         }
@@ -598,14 +612,19 @@ public class CarouselLayoutManager extends RecyclerView.LayoutManager implements
         final float absIemPositionDiff = Math.abs(itemPositionDiff);
 
         // we detect if this item is close for center or not. We use (1 / maxVisibleItem) ^ (1/3) as close definer.
-        if (absIemPositionDiff > StrictMath.pow(1.0f / mLayoutHelper.mMaxVisibleItems, 1.0f / 3)) {
+
+        //Changed: constant speed
+      /*  if (absIemPositionDiff > StrictMath.pow(1.0f / mLayoutHelper.mMaxVisibleItems, 1.0f / 3)) {
             // this item is far from center line, so we should make it move like square root function
+
             return StrictMath.pow(absIemPositionDiff / mLayoutHelper.mMaxVisibleItems, 1 / 2.0f);
+
         } else {
             // this item is close from center line. we should slow it down and don't make it speed up very quick.
             // so square function in range of [0, (1/maxVisible)^(1/3)] is quite good in it;
             return StrictMath.pow(absIemPositionDiff, 2.0f);
-        }
+        }*/
+        return StrictMath.pow(absIemPositionDiff/mLayoutHelper.mMaxVisibleItems, 1.0f);
     }
 
     /**
@@ -648,9 +667,9 @@ public class CarouselLayoutManager extends RecyclerView.LayoutManager implements
     }
 
     protected int getOffsetForCurrentView(@NonNull final View view) {
+        //Not getting called,  no change here
         final int targetPosition = getPosition(view);
         final float directionDistance = getScrollDirection(targetPosition);
-
         final int distance = Math.round(directionDistance * getScrollItemSize());
         if (mCircleLayout) {
             return distance;
@@ -659,6 +678,36 @@ public class CarouselLayoutManager extends RecyclerView.LayoutManager implements
         }
     }
 
+    public View findSnapView() {
+        if (getChildCount() > 0) {
+            return getChildAt(0);
+        }
+        return null;
+    }
+
+
+
+    public int getSnapHeight() {
+       /* float absCurrentScrollPosition = currentScrollPosition;
+
+        Rect displayRect = new Rect(0, , getWidth(), getHeight() + scroll);
+        int itemCount = getItemCount();
+        for (int i = 0; i < itemCount; i++) {
+            Rect itemRect = locationRects.get(i);
+            if (displayRect.intersect(itemRect)) {
+
+                if (lastDy > 0) {
+                    // scroll变大，属于列表往下走，往下找下一个为snapView
+                    if (i < itemCount - 1) {
+                        Rect nextRect = locationRects.get(i + 1);
+                        return nextRect.top - displayRect.top;
+                    }
+                }
+                return itemRect.top - displayRect.top;
+            }
+        }*/
+        return 0;
+    }
     /**
      * Helper method that make scroll in range of [0, count). Generally this method is needed only for cycle layout.
      *

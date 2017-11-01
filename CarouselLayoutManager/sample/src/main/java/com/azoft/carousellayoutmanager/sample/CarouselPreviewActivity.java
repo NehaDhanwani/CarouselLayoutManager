@@ -34,46 +34,14 @@ public class CarouselPreviewActivity extends AppCompatActivity {
         final TestAdapter adapter = new TestAdapter();
 
         // create layout manager with needed params: vertical, cycle
-        initRecyclerView(binding.listHorizontal, new CarouselLayoutManager(CarouselLayoutManager.HORIZONTAL, false), adapter);
-        initRecyclerView(binding.listVertical, new CarouselLayoutManager(CarouselLayoutManager.VERTICAL, true), adapter);
-
-        // fab button will add element to the end of the list
-        binding.fabScroll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-/*
-                final int itemToRemove = adapter.mItemsCount;
-                if (10 != itemToRemove) {
-                    adapter.mItemsCount++;
-                    adapter.notifyItemInserted(itemToRemove);
-                }
-*/
-                binding.listHorizontal.smoothScrollToPosition(adapter.getItemCount() - 2);
-                binding.listVertical.smoothScrollToPosition(adapter.getItemCount() - 2);
-            }
-        });
-
-        // fab button will remove element from the end of the list
-        binding.fabChangeData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-/*
-                final int itemToRemove = adapter.mItemsCount - 1;
-                if (0 <= itemToRemove) {
-                    adapter.mItemsCount--;
-                    adapter.notifyItemRemoved(itemToRemove);
-                }
-*/
-                binding.listHorizontal.smoothScrollToPosition(1);
-                binding.listVertical.smoothScrollToPosition(1);
-            }
-        });
+        //initRecyclerView(binding.listHorizontal, new CarouselLayoutManager(CarouselLayoutManager.HORIZONTAL, false), adapter);
+        initRecyclerView(binding.listVertical, new CarouselLayoutManager(CarouselLayoutManager.VERTICAL, false), adapter);
     }
 
     private void initRecyclerView(final RecyclerView recyclerView, final CarouselLayoutManager layoutManager, final TestAdapter adapter) {
         // enable zoom effect. this line can be customized
         layoutManager.setPostLayoutListener(new CarouselZoomPostLayoutListener());
-        layoutManager.setMaxVisibleItems(2);
+        layoutManager.setMaxVisibleItems(3);
 
         recyclerView.setLayoutManager(layoutManager);
         // we expect only fixed sized item for now

@@ -26,7 +26,6 @@ public class CarouselZoomPostLayoutListener implements CarouselLayoutManager.Pos
             translateX = Math.signum(itemPositionToCenterDiff) * translateXGeneral;
             translateY = 0;
         }
-
         return new ItemTransformation(scale, scale, translateX, translateY);
     }
 }

@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.azoft.carousellayoutmanager.sample"
-        minSdkVersion 11
+        minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -24,7 +24,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.azoft.carousellayoutmanager:carousel:1.2.1'
-//    compile project(':carousel')
+    compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
+    //compile 'com.azoft.carousellayoutmanager:carousel:1.2.1'
+    compile project(':carousel')
 }
